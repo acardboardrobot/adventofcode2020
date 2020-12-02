@@ -8,11 +8,11 @@ namespace Advent_of_Code_2020
 	{
 		static void Main(string[] args)
 		{
-			Console.WriteLine("Hello World!");
-			Day1("day1input.txt");
+			//Day1("day1input.txt");
+            Day2("day2input.txt");
 		}
 
-		public static string Day1(string inputFile)
+		public static void Day1(string inputFile)
 		{
 			var input = File.ReadAllLines(inputFile);
 
@@ -58,7 +58,47 @@ namespace Advent_of_Code_2020
 
 			Console.WriteLine(firstNumber * secondNumber * thirdNumber);
 
-			return "done";
 		}
-	}
+	
+        public static void Day2(string inputFile)
+        {
+            var input = File.ReadAllLines(inputFile);
+
+            List<string> inputStrings = new List<string>();
+
+            foreach (string s in input)
+            {
+                inputStrings.Add(s);
+            }
+
+            int validCount = 0;
+
+            foreach (string currentLine in inputStrings)
+            {
+                string[] elements = currentLine.Split(' ');
+                int minCount = int.Parse(elements[0].Split('-')[0]);
+                int maxCount = int.Parse(elements[0].Split('-')[1]);
+                
+                char desChar = elements[1][0];
+
+                int currentCountofChar = 0;
+
+                for (int stringPosition = 0; stringPosition < elements[2].Length; stringPosition++)
+                {
+                    if (elements[2][stringPosition] == desChar)
+                    {
+                        currentCountofChar++;
+                    }
+                }
+
+                if (currentCountofChar >= minCount && currentCountofChar <= maxCount)
+                {
+                    validCount++;
+                }
+            }
+
+            Console.WriteLine(validCount);
+        }
+
+    }
 }
