@@ -76,22 +76,32 @@ namespace Advent_of_Code_2020
             foreach (string currentLine in inputStrings)
             {
                 string[] elements = currentLine.Split(' ');
-                int minCount = int.Parse(elements[0].Split('-')[0]);
-                int maxCount = int.Parse(elements[0].Split('-')[1]);
+                int firstPosition = int.Parse(elements[0].Split('-')[0]);
+                int secondPosition = int.Parse(elements[0].Split('-')[1]);
+
+                firstPosition--;
+                secondPosition--;
                 
                 char desChar = elements[1][0];
 
                 int currentCountofChar = 0;
+                bool firstPos = false;
+                bool secondPos = false;
 
-                for (int stringPosition = 0; stringPosition < elements[2].Length; stringPosition++)
+                if (elements[2][firstPosition] == desChar)
                 {
-                    if (elements[2][stringPosition] == desChar)
+                    firstPos = true;
+                }
+
+                if (elements[2].Length > secondPosition)
+                {
+                    if (elements[2][secondPosition] == desChar)
                     {
-                        currentCountofChar++;
+                        secondPos = true;
                     }
                 }
 
-                if (currentCountofChar >= minCount && currentCountofChar <= maxCount)
+                if (firstPos != secondPos)
                 {
                     validCount++;
                 }
