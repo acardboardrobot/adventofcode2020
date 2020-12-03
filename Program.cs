@@ -117,40 +117,58 @@ namespace Advent_of_Code_2020
 
             List<string> inputStrings = new List<string>();
 
+            List<int> treesHit = new List<int>();
+
             foreach (string s in input)
             {
                 inputStrings.Add(s);
             }
 
+            treesHit.Add(downhillFunction(1, 1, inputStrings));
+            treesHit.Add(downhillFunction(3, 1, inputStrings));
+            treesHit.Add(downhillFunction(5, 1, inputStrings));
+            treesHit.Add(downhillFunction(7, 1, inputStrings));
+            treesHit.Add(downhillFunction(1, 2, inputStrings));
+
+            uint outputNumber = 1;
+
+            foreach(uint i in treesHit)
+            {
+                Console.WriteLine(outputNumber);
+                outputNumber *= i;
+            }
+
+            Console.WriteLine(outputNumber);
+        }
+
+        public static int downhillFunction(int xInc, int yInc, List<string> map)
+        {
             int treeCollisions = 0;
 
             int xPos = 0;
             int yPos = 0;
 
-            int xIncrement = 3;
-            int yIncrement = 1;
+            int xIncrement = xInc;
+            int yIncrement = yInc;
 
-            while (yPos < inputStrings.Count-1)
+            while (yPos < map.Count-1)
             {
                 xPos += xIncrement;
                 yPos += yIncrement;
 
-                Console.WriteLine("{0}, {1}", xPos, yPos);
-
-                if (xPos >= inputStrings[0].Length)
+                if (xPos >= map[0].Length)
                 {
-                    xPos -= inputStrings[0].Length;
+                    xPos -= map[0].Length;
                 }
 
-                Console.WriteLine(inputStrings[yPos][xPos]);
-
-                if (inputStrings[yPos][xPos] == '#')
+                if (map[yPos][xPos] == '#')
                 {
                     treeCollisions++;
                 }
             }
 
             Console.WriteLine(treeCollisions);
+            return treeCollisions;
         }
     }
 }
