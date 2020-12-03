@@ -9,7 +9,8 @@ namespace Advent_of_Code_2020
 		static void Main(string[] args)
 		{
 			//Day1("day1input.txt");
-            Day2("day2input.txt");
+            //Day2("day2input.txt");
+            Day3("day3input.txt");
 		}
 
 		public static void Day1(string inputFile)
@@ -110,5 +111,46 @@ namespace Advent_of_Code_2020
             Console.WriteLine(validCount);
         }
 
+        public static void Day3(string inputFile)
+        {
+            var input = File.ReadAllLines(inputFile);
+
+            List<string> inputStrings = new List<string>();
+
+            foreach (string s in input)
+            {
+                inputStrings.Add(s);
+            }
+
+            int treeCollisions = 0;
+
+            int xPos = 0;
+            int yPos = 0;
+
+            int xIncrement = 3;
+            int yIncrement = 1;
+
+            while (yPos < inputStrings.Count-1)
+            {
+                xPos += xIncrement;
+                yPos += yIncrement;
+
+                Console.WriteLine("{0}, {1}", xPos, yPos);
+
+                if (xPos >= inputStrings[0].Length)
+                {
+                    xPos -= inputStrings[0].Length;
+                }
+
+                Console.WriteLine(inputStrings[yPos][xPos]);
+
+                if (inputStrings[yPos][xPos] == '#')
+                {
+                    treeCollisions++;
+                }
+            }
+
+            Console.WriteLine(treeCollisions);
+        }
     }
 }
