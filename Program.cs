@@ -10,7 +10,8 @@ namespace Advent_of_Code_2020
 		{
 			//Day1("day1input.txt");
             //Day2("day2input.txt");
-            Day3("day3input.txt");
+            //Day3("day3input.txt");
+            Day4("day4input.txt");
 		}
 
 		public static void Day1(string inputFile)
@@ -141,6 +142,107 @@ namespace Advent_of_Code_2020
             Console.WriteLine(outputNumber);
         }
 
+        public static void Day4(string inputFile)
+        {
+            var input = File.ReadAllLines(inputFile);
+
+            List<string> inputStrings = new List<string>();
+            List<string> passportStrings = new List<string>();
+
+            foreach (string s in input)
+            {
+                inputStrings.Add(s);
+            }
+
+            int lastBlank = 0;
+
+            for (int i = 0; i < inputStrings.Count; i++)
+            {
+                if (inputStrings[i].Length == 0)
+                {
+                    string toAdd = "";
+                    for (int e = lastBlank; e < i; e++)
+                    {
+                        toAdd = toAdd + " " + inputStrings[e];
+                    }
+
+                    toAdd = toAdd.Trim();
+
+                    passportStrings.Add(toAdd);
+
+                    lastBlank = i;
+                }
+            }
+
+            string lastEntry = "";
+
+            for (int e = lastBlank; e < inputStrings.Count; e++)
+            {
+                lastEntry = lastEntry + " " + inputStrings[e];
+            }
+            lastEntry = lastEntry.Trim();
+            passportStrings.Add(lastEntry);
+
+            int validPassports = 0;
+
+            foreach (string s in passportStrings)
+            {
+                bool byrPresent = false;
+                bool iyrPresent = false;
+                bool eyrPresent = false;
+                bool hgtPresent = false;
+                bool hclPresent = false;
+                bool eclPresent = false;
+                bool pidPresent = false;
+
+                List<string> fields = new List<string>();
+                string[] valueArray = s.Split(' ');
+                foreach (string value in valueArray)
+                {
+                    fields.Add(value);
+                }
+
+                foreach(string fieldValue in fields)
+                {
+                    string fieldType = fieldValue.Split(':')[0];
+                    if (fieldType == "byr")
+                    {
+                        byrPresent = true;
+                    }
+                    else if (fieldType == "iyr")
+                    {
+                        iyrPresent = true;
+                    }
+                    else if (fieldType == "eyr")
+                    {
+                        eyrPresent = true;
+                    }
+                    else if (fieldType == "hgt")
+                    {
+                        hgtPresent = true;
+                    }
+                    else if (fieldType == "hcl")
+                    {
+                        hclPresent = true;
+                    }
+                    else if (fieldType == "ecl")
+                    {
+                        eclPresent = true;
+                    }
+                    else if (fieldType == "pid")
+                    {
+                        pidPresent = true;
+                    }
+                }
+
+                if (byrPresent && iyrPresent && eyrPresent && hgtPresent && hclPresent && eclPresent && pidPresent)
+                {
+                    validPassports++;
+                }
+            }
+
+            Console.WriteLine(validPassports);
+        }
         public static int downhillFunction(int xInc, int yInc, List<string> map)
         {
             int treeCollisions = 0;
