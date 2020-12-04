@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Text.RegularExpressions;
 
 namespace Advent_of_Code_2020
 {
@@ -202,36 +203,88 @@ namespace Advent_of_Code_2020
                     fields.Add(value);
                 }
 
-                foreach(string fieldValue in fields)
+                foreach(string fieldTuple in fields)
                 {
-                    string fieldType = fieldValue.Split(':')[0];
+                    string fieldType = fieldTuple.Split(':')[0];
+                    string fieldValue = fieldTuple.Split(':')[1];
+
                     if (fieldType == "byr")
                     {
-                        byrPresent = true;
+                        if (fieldValue.Length == 4)
+                        {
+                            int birthYear = int.Parse(fieldValue);
+                            if (birthYear >= 1920 && birthYear <= 2002)
+                            {
+                                byrPresent = true;
+                            }
+                        }
                     }
                     else if (fieldType == "iyr")
                     {
-                        iyrPresent = true;
+                        if (fieldValue.Length == 4)
+                        {
+                            int issueYear = int.Parse(fieldValue);
+                            if (issueYear >= 2010 && issueYear <= 2020)
+                            {
+                                iyrPresent = true;
+                            }
+                        }
                     }
                     else if (fieldType == "eyr")
                     {
-                        eyrPresent = true;
+                        if (fieldValue.Length == 4)
+                        {
+                            int expiryYear = int.Parse(fieldValue);
+                            if (expiryYear >= 2020 && expiryYear <= 2030)
+                            {
+                                eyrPresent = true;
+                            }
+                        }
                     }
                     else if (fieldType == "hgt")
                     {
-                        hgtPresent = true;
+                        string endUnit = fieldValue.Substring(fieldValue.Length-2);
+                        int heightNumber = 0;
+
+                        if (endUnit == "in")
+                        {
+                            heightNumber = int.Parse(fieldValue.Substring(0, fieldValue.Length-2));
+                            if (heightNumber >= 59 && heightNumber <= 76)
+                            {
+                                hgtPresent = true;
+                            }
+                        }
+                        else if (endUnit == "cm")
+                        {
+                            heightNumber = int.Parse(fieldValue.Substring(0, fieldValue.Length-2));
+                            if (heightNumber >= 150 && heightNumber <= 193)
+                            {
+                                hgtPresent = true;
+                            }
+                        }
                     }
                     else if (fieldType == "hcl")
                     {
-                        hclPresent = true;
+                        if (fieldValue.Length == 7 && fieldValue[0] == '#')
+                        {
+                            string hairColour = fieldValue.Substring(1);
+
+                            hclPresent = Regex.Match(hairColour, "[0-9a-f]").Success;
+                        }
                     }
                     else if (fieldType == "ecl")
                     {
-                        eclPresent = true;
+                        if (fieldValue == "amb" || fieldValue == "blu" || fieldValue == "brn" || fieldValue == "gry" || fieldValue == "grn" || fieldValue == "hzl" || fieldValue == "oth" )
+                        {
+                            eclPresent = true;
+                        }
                     }
                     else if (fieldType == "pid")
                     {
-                        pidPresent = true;
+                        if (fieldValue.Length == 9)
+                        {
+                            pidPresent = Regex.Match(fieldValue, "[0-9]").Success;
+                        }
                     }
                 }
 
