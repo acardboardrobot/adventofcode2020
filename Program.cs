@@ -12,7 +12,8 @@ namespace Advent_of_Code_2020
 			//Day1("day1input.txt");
             //Day2("day2input.txt");
             //Day3("day3input.txt");
-            Day4("day4input.txt");
+            //Day4("day4input.txt");
+            Day5("day5input.txt");
 		}
 
 		public static void Day1(string inputFile)
@@ -295,6 +296,71 @@ namespace Advent_of_Code_2020
             }
 
             Console.WriteLine(validPassports);
+        }
+
+        public static void Day5(string inputFile)
+        {
+            var input = File.ReadAllLines(inputFile);
+
+            List<string> inputStrings = new List<string>();
+
+            foreach (string s in input)
+            {
+                inputStrings.Add(s);
+            }
+
+            int highestSeatId = 0;
+
+            foreach (string boardingPass in inputStrings)
+            {
+                int rowNumber = 0;
+                int rowMax = 127;
+                int rowMin = 0;
+                int columnNumber = 0;
+                int columnMin = 0;
+                int columnMax = 7;
+                int currentRowIncrement = 64;
+                int currentColumnIncrement = 4;
+
+                for (int i = 0; i < 7; i++)
+                {
+                    if (boardingPass[i] == 'B')
+                    {  
+                        rowMin += currentRowIncrement;
+                    }
+                    else
+                    {
+                        rowMax -= currentRowIncrement;
+                    }
+                    currentRowIncrement /= 2;
+                }
+
+                rowNumber = rowMin;
+
+                for (int i = 7; i < 10; i++)
+                {
+                    if (boardingPass[i] == 'R')
+                    {  
+                        columnMin += currentColumnIncrement;
+                    }
+                    else
+                    {
+                        columnMax -= currentColumnIncrement;
+                    }
+                    currentColumnIncrement /= 2;
+                }
+
+                columnNumber = columnMin;
+
+                int currentSeatId = (rowNumber * 8) + columnNumber;
+
+                if (currentSeatId > highestSeatId)
+                {
+                    highestSeatId = currentSeatId;
+                }
+            }
+
+            Console.WriteLine(highestSeatId);
         }
         public static int downhillFunction(int xInc, int yInc, List<string> map)
         {
