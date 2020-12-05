@@ -310,6 +310,8 @@ namespace Advent_of_Code_2020
             }
 
             int highestSeatId = 0;
+            int lowestSeatId = 500;
+            List<int> boardingPassIds = new List<int>();
 
             foreach (string boardingPass in inputStrings)
             {
@@ -358,9 +360,39 @@ namespace Advent_of_Code_2020
                 {
                     highestSeatId = currentSeatId;
                 }
+
+                if (currentSeatId < lowestSeatId)
+                {
+                    lowestSeatId = currentSeatId;
+                }
+
+                boardingPassIds.Add(currentSeatId);
             }
 
             Console.WriteLine(highestSeatId);
+
+            boardingPassIds.Sort();
+
+            List<int> adjacentSeats = new List<int>();
+
+            for(int i = 0; i < boardingPassIds.Count; i++)
+            {
+                if (i > 0 && i < boardingPassIds.Count - 1)
+                {
+                    if (boardingPassIds[i] - boardingPassIds[i-1] == 1 && boardingPassIds[i+1] - boardingPassIds[i] == 1)
+                    {
+                        //Console.WriteLine(boardingPassIds[i]);
+                    }
+                    else
+                    {
+                        adjacentSeats.Add(boardingPassIds[i]);
+                    }
+                }
+            }
+
+            int mySeatId = adjacentSeats[1] - 1;
+            Console.WriteLine(mySeatId);
+
         }
         public static int downhillFunction(int xInc, int yInc, List<string> map)
         {
