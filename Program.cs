@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text.RegularExpressions;
 
 namespace Advent_of_Code_2020
@@ -13,7 +14,8 @@ namespace Advent_of_Code_2020
             //Day2("day2input.txt");
             //Day3("day3input.txt");
             //Day4("day4input.txt");
-            Day5("day5input.txt");
+            //Day5("day5input.txt");
+            Day6("day6input.txt");
 		}
 
 		public static void Day1(string inputFile)
@@ -393,6 +395,64 @@ namespace Advent_of_Code_2020
             int mySeatId = adjacentSeats[1] - 1;
             Console.WriteLine(mySeatId);
 
+        }
+
+        public static void Day6(string inputFile)
+        {
+
+            var input = File.ReadAllLines(inputFile);
+
+            List<string> inputStrings = new List<string>();
+            List<string> groupStrings = new List<string>();
+
+            foreach (string s in input)
+            {
+                inputStrings.Add(s);
+            }
+
+            int lastBlank = 0;
+
+            for (int i = 0; i < inputStrings.Count; i++)
+            {
+                if (inputStrings[i].Length == 0)
+                {
+                    string toAdd = "";
+                    for (int e = lastBlank; e < i; e++)
+                    {
+                        toAdd = toAdd + inputStrings[e];
+                    }
+
+                    toAdd = toAdd.Trim();
+
+                    groupStrings.Add(toAdd);
+
+                    lastBlank = i;
+                }
+            }
+
+            List<int> groupCounts = new List<int>();
+
+            for (int i = 0; i < groupStrings.Count; i++)
+            {
+                List<char> charsInString = new List<char>();
+                for (int e = 0; e < groupStrings[i].Length; e++)
+                {
+                    charsInString.Add(groupStrings[i][e]);
+                }
+                
+                groupCounts.Add(charsInString.Distinct().ToList().Count);
+
+                Console.WriteLine(groupCounts[i]);
+            }
+
+            int sumCount = 0;
+
+            foreach (int i in groupCounts)
+            {
+                sumCount += i;
+            }
+
+            Console.WriteLine(sumCount);
         }
         public static int downhillFunction(int xInc, int yInc, List<string> map)
         {
