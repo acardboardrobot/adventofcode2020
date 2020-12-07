@@ -419,7 +419,7 @@ namespace Advent_of_Code_2020
                     string toAdd = "";
                     for (int e = lastBlank; e < i; e++)
                     {
-                        toAdd = toAdd + inputStrings[e];
+                        toAdd = toAdd + '\n' + inputStrings[e];
                     }
 
                     toAdd = toAdd.Trim();
@@ -434,15 +434,36 @@ namespace Advent_of_Code_2020
 
             for (int i = 0; i < groupStrings.Count; i++)
             {
+                List<string> eachLine = new List<string>();
+                eachLine = groupStrings[i].Split('\n').ToList();
+
                 List<char> charsInString = new List<char>();
                 for (int e = 0; e < groupStrings[i].Length; e++)
                 {
                     charsInString.Add(groupStrings[i][e]);
                 }
                 
-                groupCounts.Add(charsInString.Distinct().ToList().Count);
+                List<char> charsInAllStrings = new List<char>();
 
-                Console.WriteLine(groupCounts[i]);
+                foreach (char c in charsInString)
+                {
+                    bool presentInAll = true;
+
+                    foreach (string compareString in eachLine)
+                    {
+                        if (!compareString.Contains(c))
+                        {
+                            presentInAll = false;
+                        }
+                    }
+
+                    if (presentInAll)
+                    {
+                        charsInAllStrings.Add(c);
+                    }
+                }
+
+                groupCounts.Add(charsInAllStrings.Distinct().ToList().Count);
             }
 
             int sumCount = 0;
