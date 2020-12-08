@@ -491,7 +491,7 @@ namespace Advent_of_Code_2020
 
             List<string> bagTypesCanContainGold = new List<string>();
 
-            //build a list of who connects to what.
+            /*
             foreach (string s in inputStrings)
             {
                 List<string> kids = getChildren(s);
@@ -518,8 +518,15 @@ namespace Advent_of_Code_2020
                     }
                 }
             }
+            */
 
-            Console.WriteLine(bagTypesCanContainGold.Count);
+            string startingString = getBagString("shiny gold", inputStrings);
+
+            int bagsHeldInGold = getHeldBagCount(startingString, inputStrings);
+
+            //Console.WriteLine(bagTypesCanContainGold.Count);
+
+            Console.WriteLine("{0} bags in your shiny gold one.", bagsHeldInGold);
             //foreach type of bag
             //add the types it links to to a list
             //Check these types, if they're a gold bag, then bool is true and exit. We just need to know that. If not, recurse
@@ -542,24 +549,61 @@ namespace Advent_of_Code_2020
         {
             List<string> heldBags = new List<string>();
 
-            if (input != null)
+            if (input.Contains("contain"))
             {
-                string thisBaseType = input.Split("contain")[0];
-                string childTypes = input.Split("contain")[1];
-                childTypes = childTypes.Replace(".", " ");
-                childTypes = childTypes.Replace("bag", " ");
-                childTypes = childTypes.Trim();
-
-                heldBags = childTypes.Split(',').ToList();
-
-                for (int i = 0; i < heldBags.Count; i++)
+                if (input.Contains("no other"))
                 {
-                    heldBags[i] = heldBags[i].Trim();
+                    return heldBags;
+                }
+                else
+                {
+                    string thisBaseType = input.Split("contain")[0];
+                    string childTypes = input.Split("contain")[1];
+                    childTypes = childTypes.Replace(".", " ");
+                    childTypes = childTypes.Replace("bag", " ");
+                    childTypes = childTypes.Trim();
+
+                    heldBags = childTypes.Split(',').ToList();
+
+                    for (int i = 0; i < heldBags.Count; i++)
+                    {
+                        heldBags[i] = heldBags[i].Trim();
+                    }
+                }
+                
+            }
+            return heldBags;
+        }
+
+        public static int getHeldBagCount(string bagType, List<string> inputs)
+        {
+            int total = 0;
+
+            List<string> children = getChildren(bagType);
+
+            if (children.Count == 0)
+            {
+                return 0;
+            }
+            else
+            {
+                for (int i = 0; i < children.Count; i++)
+                {
+                    int countOfThisBag = int.Parse(children[i].Split(" ")[0]);
+                    string thisBagType = children[i].Substring(2);
+                    
+                    int bagsBelowCount = getHeldBagCount(getBagString(thisBagType, inputs), inputs);
+
+                    Console.WriteLine(bagsBelowCount);
+                    Console.WriteLine(countOfThisBag);
+
+                    total += countOfThisBag + (bagsBelowCount * countOfThisBag);
                 }
             }
 
-            return heldBags;
+            return total;
         }
+
         public static int downhillFunction(int xInc, int yInc, List<string> map)
         {
             int treeCollisions = 0;
