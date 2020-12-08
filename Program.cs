@@ -16,7 +16,8 @@ namespace Advent_of_Code_2020
             //Day4("day4input.txt");
             //Day5("day5input.txt");
             //Day6("day6input.txt");
-            Day7("day7input.txt");
+            //Day7("day7input.txt");
+            Day8("day8input.txt");
 		}
 
 		public static void Day1(string inputFile)
@@ -530,6 +531,61 @@ namespace Advent_of_Code_2020
             //foreach type of bag
             //add the types it links to to a list
             //Check these types, if they're a gold bag, then bool is true and exit. We just need to know that. If not, recurse
+        }
+
+        public static void Day8(string inputFile)
+        {
+            var input = File.ReadAllLines(inputFile);
+
+            List<string> instructionSet = new List<string>();
+
+            foreach (string s in input)
+            {
+                instructionSet.Add(s);
+            }
+
+            int currentLine = 0;
+            int accumulator = 0;
+
+            List<int> visitedInstructions = new List<int>();
+
+            bool keepRunning = true;
+
+            while (keepRunning)
+            {
+                string currentInstruction = instructionSet[currentLine].Split(" ")[0];
+                int currentInstructionValue = int.Parse(instructionSet[currentLine].Split(" ")[1]);
+
+                Console.WriteLine(currentInstruction);
+                Console.WriteLine(currentInstructionValue);
+
+                if (visitedInstructions.Contains(currentLine))
+                {
+                    Console.WriteLine(accumulator);
+                    keepRunning = false;
+                }
+                else
+                {
+                    visitedInstructions.Add(currentLine);
+                    
+                    if (currentInstruction == "nop")
+                    {
+                        currentLine++;
+                    }
+                    else if (currentInstruction == "acc")
+                    {
+                        accumulator += currentInstructionValue;
+                        currentLine++;
+                    }
+                    else if (currentInstruction == "jmp")
+                    {
+                        currentLine += currentInstructionValue;
+                    }
+                }
+
+                
+            }
+
         }
 
         public static string getBagString(string name, List<string> inputs)
