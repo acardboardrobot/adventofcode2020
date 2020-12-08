@@ -15,7 +15,8 @@ namespace Advent_of_Code_2020
             //Day3("day3input.txt");
             //Day4("day4input.txt");
             //Day5("day5input.txt");
-            Day6("day6input.txt");
+            //Day6("day6input.txt");
+            Day7("day7input.txt");
 		}
 
 		public static void Day1(string inputFile)
@@ -474,6 +475,90 @@ namespace Advent_of_Code_2020
             }
 
             Console.WriteLine(sumCount);
+        }
+
+        public static void Day7(string inputFile)
+        {
+            var input = File.ReadAllLines(inputFile);
+
+            List<string> inputStrings = new List<string>();
+
+            foreach (string s in input)
+            {
+                string cleaned = s.Replace("bags", "bag");
+                inputStrings.Add(cleaned);
+            }
+
+            List<string> bagTypesCanContainGold = new List<string>();
+
+            //build a list of who connects to what.
+            foreach (string s in inputStrings)
+            {
+                List<string> kids = getChildren(s);
+                List<string> visited = new List<string>();
+
+                while (kids.Count > 0)
+                {
+                    string currentChild = kids[0];
+                    string currentType = kids[0].Substring(2);
+                    string currentFullString = getBagString(currentType, inputStrings);
+                    
+
+                    if (currentChild.Contains("shiny gold"))
+                    {
+                        bagTypesCanContainGold.Add(s);
+                        kids = new List<string>();
+                    }
+                    else
+                    {
+                        kids.AddRange(getChildren(currentFullString));
+                        visited.Add(kids[0]);
+                        kids.RemoveAt(0);
+                        kids = kids.Distinct().ToList();
+                    }
+                }
+            }
+
+            Console.WriteLine(bagTypesCanContainGold.Count);
+            //foreach type of bag
+            //add the types it links to to a list
+            //Check these types, if they're a gold bag, then bool is true and exit. We just need to know that. If not, recurse
+        }
+
+        public static string getBagString(string name, List<string> inputs)
+        {
+            foreach (string s in inputs)
+            {
+                string thisBaseType = s.Split("contain")[0];
+
+                if (thisBaseType.Contains(name))
+                {
+                    return s;
+                }
+            }
+            return null;
+        }
+        public static List<string> getChildren(string input)
+        {
+            List<string> heldBags = new List<string>();
+
+            if (input != null)
+            {
+                string thisBaseType = input.Split("contain")[0];
+                string childTypes = input.Split("contain")[1];
+                childTypes = childTypes.Replace(".", " ");
+                childTypes = childTypes.Replace("bag", " ");
+                childTypes = childTypes.Trim();
+
+                heldBags = childTypes.Split(',').ToList();
+
+                for (int i = 0; i < heldBags.Count; i++)
+                {
+                    heldBags[i] = heldBags[i].Trim();
+                }
+            }
+
+            return heldBags;
         }
         public static int downhillFunction(int xInc, int yInc, List<string> map)
         {
