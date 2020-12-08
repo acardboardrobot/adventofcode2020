@@ -549,9 +549,9 @@ namespace Advent_of_Code_2020
 
             List<int> visitedInstructions = new List<int>();
 
-            bool keepRunning = true;
+            bool keepRunning = false;
 
-            while (keepRunning)
+            /*while (keepRunning)
             {
                 string currentInstruction = instructionSet[currentLine].Split(" ")[0];
                 int currentInstructionValue = int.Parse(instructionSet[currentLine].Split(" ")[1]);
@@ -567,7 +567,7 @@ namespace Advent_of_Code_2020
                 else
                 {
                     visitedInstructions.Add(currentLine);
-                    
+
                     if (currentInstruction == "nop")
                     {
                         currentLine++;
@@ -585,7 +585,93 @@ namespace Advent_of_Code_2020
 
                 
             }
+            */
 
+            for (int i = 0; i < instructionSet.Count; i++)
+            {
+                string currentInstruction = instructionSet[i].Split(" ")[0];
+                int currentInstructionValue = int.Parse(instructionSet[i].Split(" ")[1]);
+                List<string> newInstructions = new  List<string>();
+
+                for (int e = 0; e < instructionSet.Count; e++)
+                {
+                    if (i == e)
+                    {
+                        string alteredInstruction = instructionSet[i];
+                        if (currentInstruction == "nop")
+                        {
+                            alteredInstruction = instructionSet[i].Replace("nop", "jmp");
+                        }
+                        else if (currentInstruction == "jmp")
+                        {
+                            alteredInstruction = instructionSet[i].Replace("jmp", "nop");
+                        }
+                        newInstructions.Add(alteredInstruction);
+                    }
+                    else
+                    {
+                        newInstructions.Add(instructionSet[e]);
+                    }
+                }
+
+                if (getsToEnd(newInstructions))
+                {
+                    Console.WriteLine(i);
+                }
+
+            }
+        }
+
+        public static bool getsToEnd(List<string> instructionSet)
+        {
+            int currentLine = 0;
+            int accumulator = 0;
+            bool getsToEnd = false;
+
+            List<int> visitedInstructions = new List<int>();
+
+            bool keepRunning = true;
+
+            while (keepRunning)
+            {
+
+                if (currentLine >= instructionSet.Count)
+                {
+                    getsToEnd = true;
+                    keepRunning = false;
+                }
+                else if (visitedInstructions.Contains(currentLine))
+                {
+                    keepRunning = false;
+                }
+                else
+                {
+                    string currentInstruction = instructionSet[currentLine].Split(" ")[0];
+                    int currentInstructionValue = int.Parse(instructionSet[currentLine].Split(" ")[1]);
+                    visitedInstructions.Add(currentLine);
+
+                    if (currentInstruction == "nop")
+                    {
+                        currentLine++;
+                    }
+                    else if (currentInstruction == "acc")
+                    {
+                        accumulator += currentInstructionValue;
+                        currentLine++;
+                    }
+                    else if (currentInstruction == "jmp")
+                    {
+                        currentLine += currentInstructionValue;
+                    }
+                }
+            }
+
+            if (getsToEnd)
+            {
+                Console.WriteLine(accumulator);
+            }
+
+            return getsToEnd;
         }
 
         public static string getBagString(string name, List<string> inputs)
