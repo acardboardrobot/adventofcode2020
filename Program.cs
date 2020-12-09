@@ -627,10 +627,11 @@ namespace Advent_of_Code_2020
         {
             var input = File.ReadAllLines(inputFile);
 
-            int priorCount = 25;
+            int priorCount = 5;
             int lowerBound = 0;
             int highBound = priorCount;
             int currentPointer = priorCount;
+            long valueToGet = 0;
 
             List<long> numberSet = new List<long>();
             List<long> subSet = new List<long>();
@@ -645,10 +646,10 @@ namespace Advent_of_Code_2020
                 subSet.Add(numberSet[i]);
             }
 
-            for (int i = 0; i < numberSet.Count - priorCount; i++)
+            for (lowerBound = 0; lowerBound < numberSet.Count - priorCount; lowerBound++)
             {
                 long targetValue = numberSet[currentPointer];
-                if (i > 0)
+                if (lowerBound > 0)
                 {
                     subSet.RemoveAt(0);
                 }
@@ -668,14 +669,46 @@ namespace Advent_of_Code_2020
                 if (!correct)
                 {
                     Console.WriteLine(targetValue);
+                    valueToGet = targetValue;
                     break;
                 }
 
                 subSet.Add(numberSet[currentPointer]);
                 currentPointer++;
-                lowerBound++;
             }
 
+            subSet = new List<long>();
+            subSet.Add(numberSet[lowerBound]);
+            currentPointer = 1;
+
+            for (lowerBound = 0; lowerBound < numberSet.Count; lowerBound++)
+            {
+                long subSetTotal = 0;
+
+                foreach (long component in subSet)
+                {
+                    subSetTotal += component;
+                }
+
+
+                if (subSetTotal == valueToGet)
+                {
+                    long lowestNumber = subSet.Min();
+                    long highestNumber = subSet.Max();
+
+                    Console.WriteLine("{0}, {1}", lowestNumber, highestNumber);
+                    break;
+                }
+                else if (subSetTotal > valueToGet)
+                {
+                    subSet.RemoveAt(0);
+                }
+                else
+                {
+                    subSet.Add(numberSet[currentPointer]);
+                    currentPointer++;
+                }
+            }
         }
 
         public static bool getsToEnd(List<string> instructionSet)
