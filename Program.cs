@@ -17,7 +17,8 @@ namespace Advent_of_Code_2020
             //Day5("day5input.txt");
             //Day6("day6input.txt");
             //Day7("day7input.txt");
-            Day8("day8input.txt");
+            //Day8("day8input.txt");
+            Day9("day9input.txt");
 		}
 
 		public static void Day1(string inputFile)
@@ -620,6 +621,61 @@ namespace Advent_of_Code_2020
                 }
 
             }
+        }
+
+        public static void Day9(string inputFile)
+        {
+            var input = File.ReadAllLines(inputFile);
+
+            int priorCount = 25;
+            int lowerBound = 0;
+            int highBound = priorCount;
+            int currentPointer = priorCount;
+
+            List<long> numberSet = new List<long>();
+            List<long> subSet = new List<long>();
+
+            foreach (string s in input)
+            {
+                numberSet.Add(long.Parse(s));
+            }
+
+            for (int i = 0; i < priorCount; i++)
+            {
+                subSet.Add(numberSet[i]);
+            }
+
+            for (int i = 0; i < numberSet.Count - priorCount; i++)
+            {
+                long targetValue = numberSet[currentPointer];
+                if (i > 0)
+                {
+                    subSet.RemoveAt(0);
+                }
+
+                bool correct = false;
+                foreach (int firstValue in subSet)
+                {
+                    foreach (int secondValue in subSet)
+                    {
+                        if (firstValue + secondValue == targetValue)
+                        {
+                            correct = true;
+                        }
+                    }
+                }
+
+                if (!correct)
+                {
+                    Console.WriteLine(targetValue);
+                    break;
+                }
+
+                subSet.Add(numberSet[currentPointer]);
+                currentPointer++;
+                lowerBound++;
+            }
+
         }
 
         public static bool getsToEnd(List<string> instructionSet)
