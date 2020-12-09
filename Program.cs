@@ -627,7 +627,7 @@ namespace Advent_of_Code_2020
         {
             var input = File.ReadAllLines(inputFile);
 
-            int priorCount = 5;
+            int priorCount = 25;
             int lowerBound = 0;
             int highBound = priorCount;
             int currentPointer = priorCount;
@@ -677,36 +677,24 @@ namespace Advent_of_Code_2020
                 currentPointer++;
             }
 
-            subSet = new List<long>();
-            subSet.Add(numberSet[lowerBound]);
-            currentPointer = 1;
-
             for (lowerBound = 0; lowerBound < numberSet.Count; lowerBound++)
             {
-                long subSetTotal = 0;
+                long subSetTotal = numberSet[lowerBound];
 
-                foreach (long component in subSet)
+                for (currentPointer = lowerBound + 1; currentPointer < numberSet.Count && subSetTotal < valueToGet; currentPointer++)
                 {
-                    subSetTotal += component;
-                }
+                    subSetTotal += numberSet[currentPointer];
 
-
-                if (subSetTotal == valueToGet)
-                {
-                    long lowestNumber = subSet.Min();
-                    long highestNumber = subSet.Max();
-
-                    Console.WriteLine("{0}, {1}", lowestNumber, highestNumber);
-                    break;
-                }
-                else if (subSetTotal > valueToGet)
-                {
-                    subSet.RemoveAt(0);
-                }
-                else
-                {
-                    subSet.Add(numberSet[currentPointer]);
-                    currentPointer++;
+                    if (subSetTotal > valueToGet)
+                    {
+                        break;
+                    }
+                    else if (subSetTotal == valueToGet)
+                    {
+                        List<long> answerSet = numberSet.GetRange(lowerBound, currentPointer - lowerBound);
+                        Console.WriteLine(answerSet.Min() + answerSet.Max());
+                        break;
+                    }
                 }
             }
         }
