@@ -18,7 +18,8 @@ namespace Advent_of_Code_2020
             //Day6("day6input.txt");
             //Day7("day7input.txt");
             //Day8("day8input.txt");
-            Day9("day9input.txt");
+            //Day9("day9input.txt");
+            Day10("day10input.txt");
 		}
 
 		public static void Day1(string inputFile)
@@ -697,6 +698,53 @@ namespace Advent_of_Code_2020
                     }
                 }
             }
+        }
+
+        public static void Day10(string inputFile)
+        {
+            var input = File.ReadAllLines(inputFile);
+
+            int oneJumpCount = 0;
+            int threeJumpCount = 1;
+            int highestVolt = 3;
+
+            List<int> numberSet = new List<int>();
+
+            foreach (string s in input)
+            {
+                numberSet.Add(int.Parse(s));
+            }
+
+            numberSet.Sort();
+
+            int currentVolt = 0;
+            int previousVolt = 0;
+
+            foreach (int i in numberSet)
+            {
+                currentVolt = i;
+
+                int difference = currentVolt - previousVolt;
+
+                if (difference > 3)
+                {
+                    highestVolt = currentVolt + 3;
+                    break;
+                }
+                else if (difference == 1)
+                {
+                    oneJumpCount++;
+                }
+                else if (difference > 1)
+                {
+                    threeJumpCount++;
+                }
+
+                highestVolt = currentVolt + 3;
+                previousVolt = currentVolt;
+            }
+
+            Console.WriteLine(oneJumpCount * threeJumpCount);
         }
 
         public static bool getsToEnd(List<string> instructionSet)
