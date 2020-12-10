@@ -742,9 +742,51 @@ namespace Advent_of_Code_2020
 
                 highestVolt = currentVolt + 3;
                 previousVolt = currentVolt;
+
+                List<int> countPassList = new List<int>();
+
+                for (int e = i; e < numberSet.Count-i; e++)
+                {
+                    countPassList.Add(numberSet[i]);
+                }
             }
 
+            numberSet.Add(0);
+            numberSet.Add(highestVolt);
+            numberSet.Sort();
+            long outTotal = getAdapterCount(numberSet.Count, numberSet);
+
             Console.WriteLine(oneJumpCount * threeJumpCount);
+
+            Console.WriteLine(outTotal);
+        }
+
+        public static long getAdapterCount(int adapterCount, List<int> adapters)
+        {
+            var permutationsForEachAdapter = new long[adapterCount];
+
+            permutationsForEachAdapter[0] = 1;
+
+            for (int i = 1; i < adapterCount; i++)
+            {
+                if (adapters[i] - adapters[i - 1] <= 3)
+                {
+                    permutationsForEachAdapter[i] += permutationsForEachAdapter[i - 1];
+                }
+
+                if (i > 1 && adapters[i] - adapters[i - 2] <= 3)
+                {
+                    permutationsForEachAdapter[i] += permutationsForEachAdapter[i - 2];
+                }
+
+                if (i > 2 && adapters[i] - adapters[i - 3] <= 3)
+                {
+                    permutationsForEachAdapter[i] += permutationsForEachAdapter[i - 3];
+                }
+                    
+            }
+
+            return permutationsForEachAdapter[adapterCount - 1];
         }
 
         public static bool getsToEnd(List<string> instructionSet)
