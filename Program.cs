@@ -19,7 +19,8 @@ namespace Advent_of_Code_2020
             //Day7("day7input.txt");
             //Day8("day8input.txt");
             //Day9("day9input.txt");
-            Day10("day10input.txt");
+            //Day10("day10input.txt");
+            Day11("day11input.txt");
 		}
 
 		public static void Day1(string inputFile)
@@ -553,42 +554,6 @@ namespace Advent_of_Code_2020
 
             bool keepRunning = false;
 
-            /*while (keepRunning)
-            {
-                string currentInstruction = instructionSet[currentLine].Split(" ")[0];
-                int currentInstructionValue = int.Parse(instructionSet[currentLine].Split(" ")[1]);
-
-                Console.WriteLine(currentInstruction);
-                Console.WriteLine(currentInstructionValue);
-
-                if (visitedInstructions.Contains(currentLine))
-                {
-                    Console.WriteLine(accumulator);
-                    keepRunning = false;
-                }
-                else
-                {
-                    visitedInstructions.Add(currentLine);
-
-                    if (currentInstruction == "nop")
-                    {
-                        currentLine++;
-                    }
-                    else if (currentInstruction == "acc")
-                    {
-                        accumulator += currentInstructionValue;
-                        currentLine++;
-                    }
-                    else if (currentInstruction == "jmp")
-                    {
-                        currentLine += currentInstructionValue;
-                    }
-                }
-
-                
-            }
-            */
-
             for (int i = 0; i < instructionSet.Count; i++)
             {
                 string currentInstruction = instructionSet[i].Split(" ")[0];
@@ -759,6 +724,155 @@ namespace Advent_of_Code_2020
             Console.WriteLine(oneJumpCount * threeJumpCount);
 
             Console.WriteLine(outTotal);
+        }
+
+        public static void Day11(string inputFile)
+        {
+
+            var input = File.ReadAllLines(inputFile);
+
+            int currentX = 0;
+            int currentY = 0;
+            int currentOccupiedCount = 0;
+
+            int iteration = 0;
+
+            List<SeatingLocation> seatSet = new List<SeatingLocation>();
+            List<SeatingLocation> oldSeatSet = new List<SeatingLocation>();
+
+            foreach (string s in input)
+            {
+                for (currentX = 0; currentX < s.Length; currentX++)
+                {
+                    bool thisIsSeat = false;
+                    if (s[currentX] == 'L')
+                    {
+                        thisIsSeat = true;
+                    }
+                    seatSet.Add(new SeatingLocation(currentX, currentY, thisIsSeat, false));
+                }
+                currentY++;
+            }
+
+            while (countChangesInStates(oldSeatSet, seatSet) != 0)
+            {
+                oldSeatSet = seatSet;
+                //visualiseWaitingArea(seatSet);
+                seatSet = tickGame(seatSet);
+            }
+
+            Console.WriteLine(getOccupiedCount(seatSet));
+
+        }
+
+        public static int countChangesInStates(List<SeatingLocation> oldSet, List<SeatingLocation> newSet)
+        {
+            int changes = 0;
+
+            if (oldSet.Count == 0)
+            {
+                return 1;
+            }
+
+            for (int i = 0; i < newSet.Count; i++)
+            {
+                if (oldSet[i].occupied != newSet[i].occupied)
+                {
+                    changes++;
+                }
+            }
+
+            return changes;
+        }
+
+        public static int getOccupiedCount(List<SeatingLocation> seatSet)
+        {
+            int occupiedSeats = 0;
+
+            foreach (SeatingLocation s in seatSet)
+            {
+                if (s.occupied)
+                {
+                    occupiedSeats++;
+                }
+            }
+
+            return occupiedSeats;
+        }
+
+        public static List<SeatingLocation> tickGame(List<SeatingLocation> seatSet)
+        {
+            List<SeatingLocation> returnSet = new List<SeatingLocation>();
+
+            int changesInTick = 0;
+
+            foreach (SeatingLocation s in seatSet)
+            {
+                int adjacentSeats = 0;
+                foreach (SeatingLocation e in seatSet)
+                {
+                    if (Math.Abs(s.xPos - e.xPos) <= 1 && Math.Abs(s.yPos - e.yPos) <= 1 && s != e)
+                    {
+                        if (e.occupied && e.isSeat)
+                        {
+                            adjacentSeats++;
+                        }
+                    }
+                }
+                
+                bool toOccupy = s.occupied;
+
+                if (adjacentSeats >= 4 && s.isSeat)
+                {
+                    toOccupy = false;
+                }
+                else if (adjacentSeats == 0 && !s.occupied && s.isSeat)
+                {
+                    toOccupy = true;
+                }
+
+                if (toOccupy != s.occupied)
+                {
+                    if (s.isSeat)
+                    {
+                        changesInTick++;
+                    }
+                }
+
+                SeatingLocation newSeat = new SeatingLocation(s.xPos, s.yPos, s.isSeat, toOccupy);
+                returnSet.Add(newSeat);
+            }
+
+            //Console.WriteLine(changesInTick);
+
+            return returnSet;
+        }
+
+        public static void visualiseWaitingArea(List<SeatingLocation> seatSet)
+        {
+            for (int i = 0; i < 98; i++)
+            {
+                for (int e = 0; e < 98; e++)
+                {
+                    int currentHolder = i*10 + e;
+                    if (seatSet[currentHolder].isSeat)
+                    {
+                        if (seatSet[currentHolder].occupied)
+                        {
+                            Console.Write("#");
+                        }
+                        else
+                        {
+                            Console.Write("S");
+                        }
+                    }
+                    else
+                    {
+                        Console.Write("_");
+                    }
+                }
+                Console.Write('\n');
+            }
         }
 
         public static long getAdapterCount(int adapterCount, List<int> adapters)
@@ -941,6 +1055,21 @@ namespace Advent_of_Code_2020
 
             Console.WriteLine(treeCollisions);
             return treeCollisions;
+        }
+    }
+
+    public class SeatingLocation
+    {
+        public int xPos, yPos;
+        public bool isSeat;
+        public bool occupied;
+
+        public SeatingLocation(int desX, int desY, bool seat, bool deoccupied)
+        {
+            xPos = desX;
+            yPos = desY;
+            isSeat = seat;
+            occupied = deoccupied;
         }
     }
 }
