@@ -754,14 +754,56 @@ namespace Advent_of_Code_2020
                 currentY++;
             }
 
-            while (countChangesInStates(oldSeatSet, seatSet) != 0)
+            foreach (SeatingLocation s in seatSet)
             {
-                oldSeatSet = seatSet;
-                //visualiseWaitingArea(seatSet);
-                seatSet = tickGame(seatSet);
+                s.buildAdjacencies(seatSet);
             }
 
-            Console.WriteLine(getOccupiedCount(seatSet));
+            Console.WriteLine("Adjacencies built");
+
+            bool keepRunning = true;
+
+            while (keepRunning)
+            {
+                Console.WriteLine("hhi");
+                oldSeatSet = seatSet;
+                //visualiseWaitingArea(seatSet);
+                List<SeatingLocation> newSeatSet = tickGamePart2(seatSet);
+                Console.WriteLine("here");
+
+                int countIt = 0;
+
+                seatSet = newSeatSet;
+
+                for (int i = 0; i < oldSeatSet.Count; i++)
+                {
+                    Console.WriteLine("{0}, {1}, {2}, {3}", oldSeatSet[i].xPos, oldSeatSet[i].yPos, oldSeatSet[i].isSeat, oldSeatSet[i].occupied);
+                    if (oldSeatSet[i].occupied != newSeatSet[i].occupied && oldSeatSet[i].isSeat)
+                    {
+                        countIt++;
+                    }
+                    Console.WriteLine("-----------");
+                }
+
+                if (countIt == 0)
+                {
+                    Console.WriteLine("run out");
+                    keepRunning = false;
+                }
+
+            }
+
+            int outNumber = 0;
+
+            for (int i = 0; i < seatSet.Count; i++)
+            {
+                if (seatSet[i].isSeat && seatSet[i].occupied)
+                {
+                    outNumber++;
+                }
+            }
+
+            Console.WriteLine(outNumber);
 
         }
 
@@ -771,15 +813,23 @@ namespace Advent_of_Code_2020
 
             if (oldSet.Count == 0)
             {
-                return 1;
+                return -1;
             }
 
             for (int i = 0; i < newSet.Count; i++)
             {
-                if (oldSet[i].occupied != newSet[i].occupied)
+                if (oldSet[i].isSeat)
                 {
-                    changes++;
+                    Console.WriteLine(i);
+                    Console.WriteLine(newSet[i].occupied);
+                    Console.WriteLine(oldSet[i].occupied);
+                    if (oldSet[i].occupied != newSet[i].occupied)
+                    {
+                        Console.WriteLine("her");
+                        changes++;
+                    }
                 }
+                
             }
 
             return changes;
@@ -809,20 +859,26 @@ namespace Advent_of_Code_2020
             foreach (SeatingLocation s in seatSet)
             {
                 int adjacentSeats = 0;
-                foreach (SeatingLocation e in seatSet)
+
+                for (int i = 0; i < s.nextAdjacentSeat.Count; i++)
                 {
-                    if (Math.Abs(s.xPos - e.xPos) <= 1 && Math.Abs(s.yPos - e.yPos) <= 1 && s != e)
+                    foreach (SeatingLocation e in seatSet)
                     {
-                        if (e.occupied && e.isSeat)
+                        if (e.xPos == s.nextAdjacentSeat[i].xPos && e.yPos == s.nextAdjacentSeat[i].yPos)
                         {
-                            adjacentSeats++;
+                            s.nextAdjacentSeat[i].occupied = e.occupied;
+                            break;
                         }
+                    }
+                    if (s.nextAdjacentSeat[i].occupied)
+                    {
+                        adjacentSeats++;
                     }
                 }
                 
                 bool toOccupy = s.occupied;
 
-                if (adjacentSeats >= 4 && s.isSeat)
+                if (adjacentSeats >= 5 && s.isSeat)
                 {
                     toOccupy = false;
                 }
@@ -848,13 +904,44 @@ namespace Advent_of_Code_2020
             return returnSet;
         }
 
+        public static List<SeatingLocation> tickGamePart2(List<SeatingLocation> seatSet)
+        {
+            List<SeatingLocation> returnSet = new List<SeatingLocation>();
+
+            int changesInTick = 0;
+            int seatsInSet = 0;
+
+            foreach (SeatingLocation s in seatSet)
+            {
+                bool nowOccupied = false;
+                if (s.isSeat)
+                {
+                    if (s.isOccupied(seatSet))
+                    {
+                        changesInTick++;
+                        nowOccupied = true;
+                    }
+                    else
+                    {
+                        nowOccupied = false;
+                    }
+                    seatsInSet++;
+                }
+                SeatingLocation newSeat = new SeatingLocation(s.xPos, s.yPos, s.isSeat, nowOccupied);
+
+                returnSet.Add(newSeat);
+            }
+
+            return returnSet;
+        }
+
         public static void visualiseWaitingArea(List<SeatingLocation> seatSet)
         {
-            for (int i = 0; i < 98; i++)
+            for (int i = 0; i < 97; i++)
             {
                 for (int e = 0; e < 98; e++)
                 {
-                    int currentHolder = i*10 + e;
+                    int currentHolder = i*97 + e;
                     if (seatSet[currentHolder].isSeat)
                     {
                         if (seatSet[currentHolder].occupied)
@@ -863,7 +950,7 @@ namespace Advent_of_Code_2020
                         }
                         else
                         {
-                            Console.Write("S");
+                            Console.Write("L");
                         }
                     }
                     else
@@ -1063,6 +1150,7 @@ namespace Advent_of_Code_2020
         public int xPos, yPos;
         public bool isSeat;
         public bool occupied;
+        public List<SeatingLocation> nextAdjacentSeat;
 
         public SeatingLocation(int desX, int desY, bool seat, bool deoccupied)
         {
@@ -1070,6 +1158,184 @@ namespace Advent_of_Code_2020
             yPos = desY;
             isSeat = seat;
             occupied = deoccupied;
+            nextAdjacentSeat = new List<SeatingLocation>();
+        }
+
+        public bool isOccupied(List<SeatingLocation> seatSet)
+        {
+            int adjacentSeatsOccupied = 0;
+            bool changeHappens = false;
+            bool toBeOccupied = false;
+
+            foreach (SeatingLocation s in nextAdjacentSeat)
+            {
+                foreach (SeatingLocation x in seatSet)
+                {
+                    if (x.xPos == s.xPos && x.yPos == s.yPos)
+                    {
+                        Console.WriteLine(x.occupied);
+                        if (x.occupied)
+                        {
+                            adjacentSeatsOccupied++;
+                            Console.WriteLine(adjacentSeatsOccupied);
+                        }
+                        break;
+                    }
+                    
+                }
+            }
+
+            Console.WriteLine(adjacentSeatsOccupied);
+            
+            if (adjacentSeatsOccupied == 0)
+            {
+                toBeOccupied = true;
+            }
+            if (adjacentSeatsOccupied >= 4)
+            {
+                toBeOccupied = false;
+            }
+
+            return toBeOccupied;
+        }
+
+        public void buildAdjacencies(List<SeatingLocation> seatSet)
+        {
+            SeatingLocation upLeft, up, upRight, Left, Right, downLeft, down, downRight;
+
+            upLeft = new SeatingLocation(-100, -100, true, false);
+            up = new SeatingLocation(-100, -100, true, false);
+            upRight = new SeatingLocation(-100, -100, true, false);
+            Left = new SeatingLocation(-100, -100, true, false);
+            Right = new SeatingLocation(-100, -100, true, false);
+            downLeft = new SeatingLocation(-100, -100, true, false);
+            down = new SeatingLocation(-100, -100, true, false);
+            downRight = new SeatingLocation(-100, -100, true, false);
+            if (isSeat)
+            {
+                foreach (SeatingLocation e in seatSet)
+                {
+                    if (xPos == e.xPos && yPos == e.yPos)
+                    {
+                        //Same position, so skip.
+                    }
+                    else if (e.isSeat)
+                    {
+                        if (e.xPos < xPos)
+                        {
+                            if (e.yPos == yPos)
+                            {
+                                //Left of on same row.
+                                if (Math.Abs(xPos - e.xPos) < Math.Abs(xPos - Left.xPos))
+                                {
+                                    Left = e;
+                                }
+                            }
+                            else if (e.yPos < yPos)
+                            {
+                                //Console.WriteLine("Left and above");
+                                if (Math.Abs(xPos - e.xPos) + Math.Abs(yPos - e.yPos) < Math.Abs(xPos - upLeft.xPos) + Math.Abs(yPos - upLeft.yPos))
+                                {
+                                    if (Math.Abs(xPos - e.xPos) - Math.Abs(yPos - e.yPos) == 0)
+                                    {
+                                        upLeft = e;
+                                    }
+                                }
+                            }
+                            else if (e.yPos > yPos)
+                            {
+                                //Console.WriteLine("Left and below");
+                                if (Math.Abs(xPos - e.xPos) + Math.Abs(yPos - e.yPos) < Math.Abs(xPos - downLeft.xPos) + Math.Abs(yPos - downLeft.yPos))
+                                {
+                                    if (Math.Abs(xPos - e.xPos) - Math.Abs(yPos - e.yPos) == 0)
+                                    {
+                                        downLeft = e;
+                                    }
+                                }
+                            }
+                        }
+                        else if (e.xPos == xPos)
+                        {
+                            if (Math.Abs(yPos - e.yPos) < Math.Abs(yPos - up.yPos))
+                            {
+                                up = e;
+                            }
+                            else if (Math.Abs(yPos - e.yPos) < Math.Abs(yPos - down.yPos))
+                            {
+                                down = e;
+                            }
+                        }
+                        else if (e.xPos > xPos)
+                        {
+                            if (e.yPos == yPos)
+                            {
+                                //Right of on same row.
+                                if (Math.Abs(xPos - e.xPos) < Math.Abs(xPos - Right.xPos))
+                                {
+                                    Right = e;
+                                }
+                            }
+                            else if (e.yPos < yPos)
+                            {
+                                //Console.WriteLine("Right and above");
+                                if (Math.Abs(xPos - e.xPos) + Math.Abs(yPos - e.yPos) < Math.Abs(xPos - upRight.xPos) + Math.Abs(yPos - upRight.yPos))
+                                {
+                                    if (Math.Abs(xPos - e.xPos) - Math.Abs(yPos - e.yPos) == 0)
+                                    {
+                                        upRight = e;
+                                    }
+                                }
+                            }
+                            else if (e.yPos > yPos)
+                            {
+                                //Console.WriteLine("Right and below");
+                                if (Math.Abs(xPos - e.xPos) + Math.Abs(yPos - e.yPos) < Math.Abs(xPos - downRight.xPos) + Math.Abs(yPos - downRight.yPos))
+                                {
+                                    if (Math.Abs(xPos - e.xPos) - Math.Abs(yPos - e.yPos) == 0)
+                                    {
+                                        downRight = e;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    
+                }
+            }
+
+            if (upLeft.xPos != -100)
+            {
+                nextAdjacentSeat.Add(upLeft);
+            }
+            if (up.xPos != -100)
+            {
+                nextAdjacentSeat.Add(up);
+            }
+            if (upRight.xPos != -100)
+            {
+                nextAdjacentSeat.Add(upRight);
+            }
+            if (Left.xPos != -100)
+            {
+                nextAdjacentSeat.Add(Left);
+            }
+            if (Right.xPos != -100)
+            {
+                nextAdjacentSeat.Add(Right);
+            }
+            if (downLeft.xPos != -100)
+            {
+                nextAdjacentSeat.Add(downLeft);
+            }
+            if (down.xPos != -100)
+            {
+                nextAdjacentSeat.Add(down);
+            }
+            if (downRight.xPos != -100)
+            {
+                nextAdjacentSeat.Add(downRight);
+            }
+
         }
     }
 }
