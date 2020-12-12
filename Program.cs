@@ -813,6 +813,7 @@ namespace Advent_of_Code_2020
 
             char currentFacing = 'E';
             Point currentPosition = new Point(0, 0);
+            Point waypointPosition = new Point(10, 1);
 
 			foreach(string s in input)
 			{
@@ -824,38 +825,51 @@ namespace Advent_of_Code_2020
                 char direction = commandTuple[0];
                 int magnitude = int.Parse(commandTuple.Substring(1));
 
-                Console.WriteLine(commandTuple);
-                Console.WriteLine("{0}, {1}", direction, magnitude);
-
                 if (direction == 'F')
                 {
                     //Forward
-                    currentPosition = moveBy(currentPosition, currentFacing, magnitude);
+                    //currentPosition = moveBy(currentPosition, currentFacing, magnitude);
+                    for (int i = 0; i < magnitude; i++)
+                    {
+                        currentPosition.x += waypointPosition.x;
+                        currentPosition.y += waypointPosition.y;
+                    }
+
+                    Console.WriteLine("Ship: {0}, {1}", currentPosition.x, currentPosition.y);
+                    Console.WriteLine("Waypoint: {0}, {1}", waypointPosition.x, waypointPosition.y);
                 }
                 else if (direction == 'L')
                 {
                     //Turn Left
-                    currentFacing = turnBy(currentFacing, direction, magnitude);
+                    //currentFacing = turnBy(currentFacing, direction, magnitude);
+                    waypointPosition = rotateAround(waypointPosition, direction, magnitude);
+                    Console.WriteLine("Waypoint: {0}, {1}", waypointPosition.x, waypointPosition.y);
                 }
                 else if (direction == 'R')
                 {
-                    currentFacing = turnBy(currentFacing, direction, magnitude);
+                    //currentFacing = turnBy(currentFacing, direction, magnitude);
+                    waypointPosition = rotateAround(waypointPosition, direction, magnitude);
+                    Console.WriteLine("Waypoint: {0}, {1}", waypointPosition.x, waypointPosition.y);
                 }
                 else if (direction == 'N')
                 {
-                    currentPosition = moveBy(currentPosition, direction, magnitude);
+                    waypointPosition = moveBy(waypointPosition, direction, magnitude);
+                    Console.WriteLine("Waypoint: {0}, {1}", waypointPosition.x, waypointPosition.y);
                 }
                 else if (direction == 'S')
                 {
-                    currentPosition = moveBy(currentPosition, direction, magnitude);
+                    waypointPosition = moveBy(waypointPosition, direction, magnitude);
+                    Console.WriteLine("Waypoint: {0}, {1}", waypointPosition.x, waypointPosition.y);
                 }
                 else if (direction == 'E')
                 {
-                    currentPosition = moveBy(currentPosition, direction, magnitude);
+                    waypointPosition = moveBy(waypointPosition, direction, magnitude);
+                    Console.WriteLine("Waypoint: {0}, {1}", waypointPosition.x, waypointPosition.y);
                 }
                 else if (direction == 'W')
                 {
-                    currentPosition = moveBy(currentPosition, direction, magnitude);
+                    waypointPosition = moveBy(waypointPosition, direction, magnitude);
+                    Console.WriteLine("Waypoint: {0}, {1}", waypointPosition.x, waypointPosition.y);
                 }
 
                 Console.WriteLine("{0}, {1}", currentPosition.x, currentPosition.y);
@@ -886,6 +900,41 @@ namespace Advent_of_Code_2020
             }
 
             return startPoint;
+        }
+
+        public static Point rotateAround(Point rotatingPoint, char rotateDirection, int magnitude)
+        {
+            Point workingPoint = new Point(rotatingPoint.x, rotatingPoint.y);
+
+            double angleInDegrees = magnitude;
+
+            if (rotateDirection == 'L')
+            {
+                angleInDegrees *= -1;
+            }
+
+            if (angleInDegrees == 270 || angleInDegrees == -90)
+            {
+                Console.WriteLine("old: {0}, {1}", workingPoint.x, workingPoint.y);
+                workingPoint.x = rotatingPoint.y;
+                workingPoint.y = rotatingPoint.x * -1;
+            }
+            else if (angleInDegrees == 180)
+            {
+                Console.WriteLine("old: {0}, {1}", rotatingPoint.x, rotatingPoint.y);
+                workingPoint.x = rotatingPoint.x * -1;
+                workingPoint.y = rotatingPoint.y * -1;
+            }
+            else if (angleInDegrees == 90 || angleInDegrees == -270)
+            {
+                Console.WriteLine("old: {0}, {1}", workingPoint.x, workingPoint.y);
+                workingPoint.x = rotatingPoint.y * -1;
+                workingPoint.y = rotatingPoint.x;
+            }
+
+            Console.WriteLine("new: {0}, {1}", workingPoint.x, workingPoint.y);
+
+            return workingPoint;
         }
 
         public static char turnBy(char currentFacing, char turnDirection, int magnitude)
@@ -1492,6 +1541,11 @@ namespace Advent_of_Code_2020
     {
         public int x {get; set;}
         public int y {get; set;}
+
+        public Point()
+        {
+
+        }
 
         public Point(int xPos, int yPos)
         {
