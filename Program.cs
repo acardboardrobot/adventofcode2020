@@ -20,7 +20,8 @@ namespace Advent_of_Code_2020
             //Day8("day8input.txt");
             //Day9("day9input.txt");
             //Day10("day10input.txt");
-            Day11("day11input.txt");
+            //Day11("day11input.txt");
+            Day12("day12input.txt");
 		}
 
 		public static void Day1(string inputFile)
@@ -765,11 +766,9 @@ namespace Advent_of_Code_2020
 
             while (keepRunning)
             {
-                Console.WriteLine("hhi");
                 oldSeatSet = seatSet;
                 //visualiseWaitingArea(seatSet);
                 List<SeatingLocation> newSeatSet = tickGamePart2(seatSet);
-                Console.WriteLine("here");
 
                 int countIt = 0;
 
@@ -787,7 +786,6 @@ namespace Advent_of_Code_2020
 
                 if (countIt == 0)
                 {
-                    Console.WriteLine("run out");
                     keepRunning = false;
                 }
 
@@ -805,6 +803,157 @@ namespace Advent_of_Code_2020
 
             Console.WriteLine(outNumber);
 
+        }
+
+        public static void Day12(string inputFile)
+        {
+            var input = File.ReadAllLines(inputFile);
+
+			List < string > commandLines = new List < string > ();
+
+            char currentFacing = 'E';
+            Point currentPosition = new Point(0, 0);
+
+			foreach(string s in input)
+			{
+				commandLines.Add(s);
+			}
+
+            foreach (string commandTuple in commandLines)
+            {
+                char direction = commandTuple[0];
+                int magnitude = int.Parse(commandTuple.Substring(1));
+
+                Console.WriteLine(commandTuple);
+                Console.WriteLine("{0}, {1}", direction, magnitude);
+
+                if (direction == 'F')
+                {
+                    //Forward
+                    currentPosition = moveBy(currentPosition, currentFacing, magnitude);
+                }
+                else if (direction == 'L')
+                {
+                    //Turn Left
+                    currentFacing = turnBy(currentFacing, direction, magnitude);
+                }
+                else if (direction == 'R')
+                {
+                    currentFacing = turnBy(currentFacing, direction, magnitude);
+                }
+                else if (direction == 'N')
+                {
+                    currentPosition = moveBy(currentPosition, direction, magnitude);
+                }
+                else if (direction == 'S')
+                {
+                    currentPosition = moveBy(currentPosition, direction, magnitude);
+                }
+                else if (direction == 'E')
+                {
+                    currentPosition = moveBy(currentPosition, direction, magnitude);
+                }
+                else if (direction == 'W')
+                {
+                    currentPosition = moveBy(currentPosition, direction, magnitude);
+                }
+
+                Console.WriteLine("{0}, {1}", currentPosition.x, currentPosition.y);
+            }
+
+            int manhattanDistance = Math.Abs(currentPosition.x) + Math.Abs(currentPosition.y);
+
+            Console.WriteLine(manhattanDistance);
+        }
+
+        public static Point moveBy(Point startPoint, char direction, int magnitude)
+        {
+            if (direction == 'N')
+            {
+                startPoint.y += magnitude;
+            }
+            else if (direction == 'S')
+            {
+                startPoint.y -= magnitude;
+            }
+            else if (direction == 'E')
+            {
+                startPoint.x += magnitude;
+            }
+            else if (direction == 'W')
+            {
+                startPoint.x -= magnitude;
+            }
+
+            return startPoint;
+        }
+
+        public static char turnBy(char currentFacing, char turnDirection, int magnitude)
+        {
+            int outDirection = 0;//0 - north, 1 - east, 2 - south, 3 - west
+            int leftOrRight = 1;//1 - right, -1 - left)
+
+            if (currentFacing == 'N')
+            {
+                outDirection = 0;
+            }
+            else if (currentFacing == 'E')
+            {
+                outDirection = 1;
+            }
+            else if (currentFacing == 'S')
+            {
+                outDirection = 2;
+            }
+            else if (currentFacing == 'W')
+            {
+                outDirection = 3;
+            }
+
+            if (turnDirection == 'R')
+            {
+                leftOrRight = 1;
+            }
+            else if (turnDirection == 'L')
+            {
+                leftOrRight = -1;
+            }
+
+            int quarterTurns = magnitude / 90;
+
+            outDirection += (quarterTurns*leftOrRight);
+
+            outDirection = outDirection % 4;
+
+            if (outDirection < 0)
+            {
+                outDirection = 4 + outDirection;
+            }
+            else
+            {
+                outDirection = outDirection;
+            }
+            
+            char outputChar = currentFacing;
+
+            if (outDirection == 0)
+            {
+                outputChar = 'N';
+            }
+            else if (outDirection == 1)
+            {
+                outputChar = 'E';
+            }
+            else if (outDirection == 2)
+            {
+                outputChar = 'S';
+            }
+            else
+            {
+                outputChar = 'W';
+            }
+
+            return outputChar;
         }
 
         public static int countChangesInStates(List<SeatingLocation> oldSet, List<SeatingLocation> newSet)
@@ -1336,6 +1485,18 @@ namespace Advent_of_Code_2020
                 nextAdjacentSeat.Add(downRight);
             }
 
+        }
+    }
+
+    public class Point
+    {
+        public int x {get; set;}
+        public int y {get; set;}
+
+        public Point(int xPos, int yPos)
+        {
+            x = xPos;
+            y = yPos;
         }
     }
 }
