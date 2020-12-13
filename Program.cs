@@ -21,7 +21,8 @@ namespace Advent_of_Code_2020
             //Day9("day9input.txt");
             //Day10("day10input.txt");
             //Day11("day11input.txt");
-            Day12("day12input.txt");
+            //Day12("day12input.txt");
+            Day13("day13input.txt");
 		}
 
 		public static void Day1(string inputFile)
@@ -878,6 +879,43 @@ namespace Advent_of_Code_2020
             int manhattanDistance = Math.Abs(currentPosition.x) + Math.Abs(currentPosition.y);
 
             Console.WriteLine(manhattanDistance);
+        }
+
+        public static void Day13(string inputFile)
+        {
+            var input = File.ReadAllLines(inputFile);
+
+			int arrivalTime = int.Parse(input[0]);
+
+			List<string> busNumbers = input[1].Split(',').ToList();
+            List<int> busesInService = new List<int>();
+
+            foreach(string bus in busNumbers)
+            {
+                int busNumber;
+
+                bool inService = int.TryParse(bus, out busNumber);
+
+                if (inService)
+                {
+                    busesInService.Add(busNumber);
+                }
+            }
+
+            int lowestWait = busesInService[0];
+            int previousShortestWait = 1000;
+
+            foreach(int i in busesInService)
+            {
+                if (i - (arrivalTime % i) < previousShortestWait)
+                {
+                    lowestWait = i;
+                    previousShortestWait = i - (arrivalTime % i);
+                }
+            }
+
+            Console.WriteLine(lowestWait * previousShortestWait);
+
         }
 
         public static Point moveBy(Point startPoint, char direction, int magnitude)
